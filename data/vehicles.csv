@@ -1,0 +1,21 @@
+name,type,brand,fuel_type,price_bdt,mileage_kmpl,engine_cc,usage_type,maintenance_yearly_bdt
+Toyota Corolla 2023,car,Toyota,petrol,3200000,14,1800,mixed,80000
+Honda Civic 2023,car,Honda,petrol,3800000,13,1500,mixed,85000
+Suzuki Swift 2022,car,Suzuki,petrol,2100000,18,1200,city,55000
+Toyota Axio 2019,car,Toyota,hybrid,2400000,20,1500,mixed,60000
+Honda Fit Hybrid,car,Honda,hybrid,2200000,22,1300,city,55000
+Mitsubishi Outlander,car,Mitsubishi,petrol,5500000,12,2400,highway,110000
+Toyota Hiace 2020,car,Toyota,diesel,4800000,10,2700,highway,120000
+Suzuki Alto 2023,car,Suzuki,petrol,1400000,22,660,city,40000
+Nissan X-Trail,car,Nissan,petrol,5800000,11,2500,highway,115000
+Honda BR-V,car,Honda,petrol,3400000,13,1500,mixed,75000
+Bajaj Pulsar 150,bike,Bajaj,petrol,185000,50,150,city,12000
+Honda CB Hornet 160R,bike,Honda,petrol,220000,45,160,mixed,14000
+Yamaha FZS V3,bike,Yamaha,petrol,195000,47,149,city,13000
+Suzuki Gixxer 150,bike,Suzuki,petrol,200000,48,155,city,13000
+Hero Hunk 150R,bike,Hero,petrol,165000,52,150,city,11000
+Honda CB150R,bike,Honda,petrol,250000,42,150,mixed,15000
+Yamaha R15 V4,bike,Yamaha,petrol,380000,35,155,highway,18000
+Bajaj Avenger 160,bike,Bajaj,petrol,210000,45,160,highway,14000
+TVS Apache RTR 160,bike,TVS,petrol,190000,46,160,mixed,12500
+Hero Splendor Plus,bike,Hero,petrol,130000,65,100,city,9000
