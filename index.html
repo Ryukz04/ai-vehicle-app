@@ -1,635 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Vehicle Finder — Bangladesh</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:       #0d0f14;
-      --surface:  #151820;
-      --card:     #1c2030;
-      --border:   #2a2f42;
-      --accent:   #4f8ef7;
-      --accent2:  #f7a24f;
-      --text:     #e8eaf0;
-      --muted:    #7b82a0;
-      --green:    #3dd68c;
-      --red:      #f76f6f;
-    }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* ── Header ── */
-    header {
-      padding: 28px 40px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-    }
-    .logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 22px;
-      letter-spacing: -0.5px;
-      color: var(--text);
-    }
-    .logo span { color: var(--accent); }
-    .nav-links { display: flex; gap: 28px; }
-    .nav-links a {
-      font-size: 14px;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color .2s;
-    }
-    .nav-links a:hover, .nav-links a.active { color: var(--text); }
-
-    /* ── Hero ── */
-    .hero {
-      text-align: center;
-      padding: 60px 20px 48px;
-    }
-    .hero-tag {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--accent);
-      background: rgba(79,142,247,.1);
-      border: 1px solid rgba(79,142,247,.25);
-      border-radius: 20px;
-      padding: 5px 14px;
-      margin-bottom: 20px;
-    }
-    .hero h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(32px, 5vw, 56px);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -1px;
-      margin-bottom: 14px;
-    }
-    .hero h1 .hl { color: var(--accent); }
-    .hero p {
-      font-size: 17px;
-      color: var(--muted);
-      max-width: 480px;
-      margin: 0 auto;
-      line-height: 1.6;
-    }
-
-    /* ── Form ── */
-    .form-wrap {
-      max-width: 860px;
-      margin: 0 auto 56px;
-      padding: 0 20px;
-    }
-    .form-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 32px 36px;
-    }
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 18px;
-      margin-bottom: 24px;
-    }
-    .field label {
-      display: block;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: .5px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-    .field select, .field input {
-      width: 100%;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      padding: 11px 14px;
-      outline: none;
-      transition: border-color .2s;
-      appearance: none;
-    }
-    .field select:focus, .field input:focus {
-      border-color: var(--accent);
-    }
-    .field select option { background: var(--card); }
-    .search-btn {
-      width: 100%;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      padding: 15px;
-      cursor: pointer;
-      letter-spacing: .3px;
-      transition: opacity .2s, transform .1s;
-    }
-    .search-btn:hover { opacity: .88; }
-    .search-btn:active { transform: scale(.99); }
-
-    /* ── Results ── */
-    .results-wrap {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 0 20px 60px;
-    }
-    .results-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .results-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-    }
-    .results-count {
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-    }
-
-    /* ── Vehicle Card ── */
-    .vehicle-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 22px;
-      transition: border-color .2s, transform .2s;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-    .vehicle-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-3px);
-    }
-    .card-type-badge {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: .5px;
-      text-transform: uppercase;
-      padding: 3px 10px;
-      border-radius: 20px;
-      display: inline-block;
-      margin-bottom: 12px;
-    }
-    .badge-car  { background: rgba(79,142,247,.15); color: var(--accent); }
-    .badge-bike { background: rgba(247,162,79,.15); color: var(--accent2); }
-    .card-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .card-brand { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
-    .card-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .stat { background: var(--surface); border-radius: 8px; padding: 10px 12px; }
-    .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 3px; }
-    .stat-value { font-size: 14px; font-weight: 500; color: var(--text); }
-    .card-price {
-      font-family: 'Syne', sans-serif;
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--green);
-    }
-    .score-bar {
-      margin-top: 14px;
-      height: 4px;
-      background: var(--border);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .score-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--green));
-      border-radius: 2px;
-      transition: width 1s ease;
-    }
-    .score-label { font-size: 11px; color: var(--muted); margin-top: 5px; }
-
-    /* ── Empty / Loading state ── */
-    .state-msg {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
-      font-size: 15px;
-    }
-    .state-icon { font-size: 40px; margin-bottom: 12px; }
-
-    /* ── Tabs ── */
-    .tabs {
-      display: flex;
-      gap: 4px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 4px;
-      margin-bottom: 32px;
-      max-width: 860px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .tab-btn {
-      flex: 1;
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      padding: 10px;
-      border-radius: 9px;
-      cursor: pointer;
-      transition: background .15s, color .15s;
-    }
-    .tab-btn.active {
-      background: var(--card);
-      color: var(--text);
-    }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    /* ── EMI / Fuel sections ── */
-    .tool-card {
-      max-width: 560px;
-      margin: 0 auto;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 32px 36px;
-    }
-    .tool-card h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 20px;
-    }
-    .result-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px 24px;
-      margin-top: 20px;
-    }
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-    }
-    .result-row:last-child { border-bottom: none; }
-    .result-row .label { color: var(--muted); }
-    .result-row .value { font-weight: 500; }
-    .result-row .value.highlight { color: var(--green); font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 700; }
-    .calc-btn {
-      width: 100%;
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      padding: 12px;
-      cursor: pointer;
-      margin-top: 16px;
-      transition: border-color .2s;
-    }
-    .calc-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* ── Footer ── */
-    footer {
-      text-align: center;
-      padding: 28px;
-      font-size: 13px;
-      color: var(--muted);
-      border-top: 1px solid var(--border);
-    }
-
-    @media (max-width: 600px) {
-      header { padding: 18px 20px; }
-      .nav-links { display: none; }
-      .form-card, .tool-card { padding: 20px; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Drivio — Find Your Machine</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06080f;--mid:#090d18;--surface:#0d1220;--card:#111828;--border:#1a2440;
+  --blue:#4f8ef7;--blue2:#7aaeff;--white:#e8edf8;--muted:#4a5878;--text:#8fa0c8;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--white);overflow-x:hidden;cursor:none;}
+.cursor{position:fixed;width:8px;height:8px;background:var(--blue);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+.cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(79,142,247,.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease,width .2s,height .2s;}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:22px 52px;background:linear-gradient(180deg,rgba(6,8,15,.9) 0%,transparent 100%);}
+.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:3px;color:var(--white);}
+.logo span{color:var(--blue);}
+.nav-links{display:flex;gap:30px;}
+.nav-links a{font-size:12px;font-weight:400;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--white);}
+.nav-btn{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--white);background:var(--blue);border:none;padding:10px 24px;cursor:none;transition:background .2s,transform .15s;}
+.nav-btn:hover{background:var(--blue2);transform:translateY(-1px);}
+.hero{position:relative;height:100vh;display:flex;align-items:center;overflow:hidden;}
+.hero-atm{position:absolute;inset:0;background:radial-gradient(ellipse 120% 80% at 70% 40%,rgba(15,25,60,.95) 0%,rgba(6,8,15,1) 65%),radial-gradient(ellipse 60% 60% at 85% 30%,rgba(30,50,110,.6) 0%,transparent 60%),radial-gradient(ellipse 40% 70% at 15% 80%,rgba(10,20,50,.8) 0%,transparent 55%);background-color:var(--bg);}
+.hero-rays{position:absolute;inset:0;background:conic-gradient(from 200deg at 90% 25%,transparent 0deg,rgba(79,142,247,.04) 15deg,transparent 30deg),conic-gradient(from 210deg at 85% 20%,transparent 0deg,rgba(79,142,247,.03) 20deg,transparent 40deg);mix-blend-mode:screen;}
+.hero-floor{position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(0deg,rgba(79,142,247,.06) 0%,transparent 100%);}
+.hero-car-glow{position:absolute;right:-5%;top:10%;width:65%;height:80%;background:radial-gradient(ellipse 70% 50% at 55% 55%,rgba(79,142,247,.08) 0%,transparent 65%),radial-gradient(ellipse 40% 30% at 50% 60%,rgba(30,80,200,.06) 0%,transparent 50%);filter:blur(2px);}
+.hero-img{position:absolute;right:-2%;top:0;bottom:0;width:62%;background:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&q=85') center 40%/cover no-repeat;filter:brightness(.55) saturate(.9) contrast(1.1);mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.3) 15%,rgba(0,0,0,.8) 35%,black 55%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.3) 15%,rgba(0,0,0,.8) 35%,black 55%);animation:heroZoom 12s ease forwards;}
+@keyframes heroZoom{from{transform:scale(1.04)}to{transform:scale(1)}}
+.scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);pointer-events:none;}
+.hero-content{position:relative;z-index:2;padding:0 52px;max-width:680px;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:10px;font-weight:400;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-bottom:24px;animation:up .7s ease both;}
+.hero-tag .dot{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:blink 1.8s infinite;}
+h1{font-family:'Syne',sans-serif;font-weight:600;font-size:clamp(44px,6.5vw,88px);line-height:.95;letter-spacing:-1px;margin-bottom:24px;animation:up .8s .1s ease both;}
+h1 .line2{color:var(--blue);}
+h1 .line3{-webkit-text-stroke:1px rgba(232,237,248,.2);color:transparent;}
+.hero-sub{font-size:15px;font-weight:300;color:var(--text);line-height:1.8;max-width:360px;margin-bottom:40px;animation:up .8s .2s ease both;}
+.cta{display:flex;align-items:center;gap:14px;animation:up .8s .3s ease both;}
+.btn-blue{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--white);background:var(--blue);border:none;padding:14px 30px;cursor:none;transition:background .2s,transform .15s,box-shadow .2s;}
+.btn-blue:hover{background:var(--blue2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(79,142,247,.3);}
+.btn-ghost{font-size:12px;font-weight:400;letter-spacing:1.5px;text-transform:uppercase;color:var(--text);background:none;border:1px solid rgba(79,142,247,.2);padding:13px 26px;cursor:none;transition:border-color .2s,color .2s;}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue);}
+.hero-specs{position:absolute;bottom:60px;right:52px;z-index:2;animation:up .9s .5s ease both;}
+.spec-card{background:rgba(13,18,32,.8);backdrop-filter:blur(20px);border:1px solid rgba(79,142,247,.15);border-top:2px solid var(--blue);padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.spec-item{padding:12px 16px;border-right:1px solid rgba(79,142,247,.1);border-bottom:1px solid rgba(79,142,247,.1);}
+.spec-item:nth-child(even){border-right:none;}
+.spec-item:nth-last-child(-n+2){border-bottom:none;}
+.spec-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--white);line-height:1;}
+.spec-num span{color:var(--blue);}
+.spec-lbl{font-size:10px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.scroll-hint{position:absolute;bottom:40px;left:52px;z-index:2;display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);animation:up 1s .7s ease both;}
+.scroll-line{width:1px;height:40px;background:linear-gradient(var(--blue),transparent);}
+.section{padding:90px 52px;}
+.eyebrow{font-size:10px;font-weight:400;letter-spacing:4px;text-transform:uppercase;color:var(--blue);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.eyebrow::after{content:'';flex:0 0 28px;height:1px;background:var(--blue);}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(30px,4.5vw,54px);font-weight:600;letter-spacing:0px;line-height:1;margin-bottom:48px;}
+.sec-title span{color:var(--blue);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start;}
+.chat-box{background:var(--surface);border:1px solid var(--border);}
+.chat-top{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(79,142,247,.04);}
+.chat-top-l{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.live{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:blink 1.8s infinite;}
+.chat-top-r{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);}
+.chat-msgs{padding:20px;min-height:340px;max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
+.msg{display:flex;gap:10px;}
+.msg.user{flex-direction:row-reverse;}
+.av{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;flex-shrink:0;}
+.av.ai{background:var(--blue);color:var(--white);}
+.av.user{background:var(--border);color:var(--text);}
+.bb{max-width:82%;padding:10px 14px;font-size:13px;font-weight:300;line-height:1.6;}
+.bb.ai{background:var(--card);border-left:2px solid var(--blue);color:var(--white);}
+.bb.user{background:rgba(79,142,247,.1);border-right:2px solid var(--blue);color:var(--white);text-align:right;}
+.opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.opt{font-size:11px;font-weight:400;letter-spacing:1px;text-transform:uppercase;color:var(--blue);background:rgba(79,142,247,.07);border:1px solid rgba(79,142,247,.22);padding:7px 12px;cursor:none;transition:background .15s,color .15s;}
+.opt:hover{background:var(--blue);color:var(--white);}
+.tyrow{display:flex;gap:4px;padding:10px 14px;}
+.d{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:blink2 1.2s infinite;}
+.d:nth-child(2){animation-delay:.2s}.d:nth-child(3){animation-delay:.4s}
+.prog{padding:12px 20px;border-top:1px solid var(--border);}
+.prog-lbl{font-size:10px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.prog-t{height:2px;background:var(--border);}
+.prog-f{height:100%;background:var(--blue);transition:width .5s;}
+.rh{font-size:10px;font-weight:400;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.vc{background:var(--surface);border:1px solid var(--border);margin-bottom:12px;overflow:hidden;transition:border-color .3s,transform .2s;}
+.vc:hover{border-color:var(--blue);transform:translateX(4px);}
+.vi{width:100%;height:136px;object-fit:cover;filter:brightness(.75) saturate(.9);transition:filter .4s;}
+.vc:hover .vi{filter:brightness(.95) saturate(1.1);}
+.vb{padding:13px 16px;}
+.vt{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;}
+.vn{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+.vp{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--blue);}
+.vm{display:flex;gap:10px;font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.vsb{height:2px;background:var(--border);}
+.vsf{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue2));transition:width 1.2s;}
+.vsl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.empty{text-align:center;padding:44px 20px;font-size:11px;font-weight:300;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.tbox{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--blue);padding:28px;}
+.tn{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:20px;}
+.tn span{color:var(--blue);}
+.fi{margin-bottom:14px;}
+.fi label{display:block;font-size:10px;font-weight:400;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.fi input,.fi select{width:100%;background:var(--card);border:1px solid var(--border);color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;padding:10px 14px;outline:none;transition:border-color .2s;appearance:none;}
+.fi input:focus,.fi select:focus{border-color:var(--blue);}
+.fi select option{background:var(--card);}
+.tbtn{width:100%;background:var(--blue);color:var(--white);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border:none;padding:13px;cursor:none;margin-top:4px;transition:background .2s,transform .15s;}
+.tbtn:hover{background:var(--blue2);transform:translateY(-1px);}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;}
+.ri{background:var(--card);border:1px solid var(--border);padding:11px 13px;}
+.ri.hl{border-left:2px solid var(--blue);}
+.rl{font-size:10px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.rv{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--white);}
+.ri.hl .rv{font-size:20px;color:var(--blue);}
+footer{border-top:1px solid var(--border);padding:30px 52px;display:flex;justify-content:space-between;align-items:center;}
+.fl{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;letter-spacing:3px;}
+.fl span{color:var(--blue);}
+footer p{font-size:10px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes blink2{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+@media(max-width:768px){.grid2,.tgrid{grid-template-columns:1fr}.nav-links{display:none}.hero-specs{display:none}.section{padding:60px 24px}nav{padding:18px 24px}.hero-content{padding:0 24px}footer{padding:24px;flex-direction:column;gap:10px;text-align:center}}
+</style>
 </head>
 <body>
-
-<header>
-  <div class="logo">AI<span>Vehicle</span></div>
-  <nav class="nav-links">
-    <a href="#" class="active">Recommend</a>
-    <a href="#">Compare</a>
-    <a href="#">EMI</a>
-    <a href="#">Fuel Cost</a>
-  </nav>
-</header>
-
-<main>
-  <section class="hero">
-    <div class="hero-tag">AI-Powered · Bangladesh</div>
-    <h1>Find Your <span class="hl">Perfect Vehicle</span><br/>Within Budget</h1>
-    <p>Smart recommendations for cars and bikes — with real cost analysis tailored for Bangladesh.</p>
-  </section>
-
-  <!-- Tabs -->
-  <div class="tabs" style="margin-bottom: 0; padding: 4px 20px; max-width: 860px; margin: 0 auto 32px;">
-    <button class="tab-btn active" onclick="switchTab('recommend', this)">Recommend</button>
-    <button class="tab-btn" onclick="switchTab('emi', this)">EMI Calculator</button>
-    <button class="tab-btn" onclick="switchTab('fuel', this)">Fuel Cost</button>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav>
+  <div class="logo">DRIV<span>IO</span></div>
+  <div class="nav-links">
+    <a href="#finder">Find</a>
+    <a href="#tools">Calculate</a>
+    <a href="https://github.com/Ryukz04/ai-vehicle-app" target="_blank">GitHub ↗</a>
   </div>
-
-  <!-- RECOMMEND TAB -->
-  <div id="tab-recommend" class="tab-panel active">
-    <div class="form-wrap">
-      <div class="form-card">
-        <div class="form-grid">
-          <div class="field">
-            <label>Vehicle Type</label>
-            <select id="vehicle_type">
-              <option value="any">Any</option>
-              <option value="car">Car</option>
-              <option value="bike">Bike</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Fuel Type</label>
-            <select id="fuel_type">
-              <option value="any">Any</option>
-              <option value="petrol">Petrol</option>
-              <option value="diesel">Diesel</option>
-              <option value="hybrid">Hybrid</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Usage</label>
-            <select id="usage_type">
-              <option value="any">Any</option>
-              <option value="city">City</option>
-              <option value="highway">Highway</option>
-              <option value="mixed">Mixed</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Brand (optional)</label>
-            <select id="brand">
-              <option value="any">Any Brand</option>
-              <option value="toyota">Toyota</option>
-              <option value="honda">Honda</option>
-              <option value="suzuki">Suzuki</option>
-              <option value="yamaha">Yamaha</option>
-              <option value="bajaj">Bajaj</option>
-              <option value="hero">Hero</option>
-              <option value="tvs">TVS</option>
-              <option value="nissan">Nissan</option>
-              <option value="mitsubishi">Mitsubishi</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Min Budget (BDT)</label>
-            <input type="number" id="budget_min" placeholder="e.g. 100000" value="0"/>
-          </div>
-          <div class="field">
-            <label>Max Budget (BDT)</label>
-            <input type="number" id="budget_max" placeholder="e.g. 3000000" value="99999999"/>
+  <button class="nav-btn" onclick="document.getElementById('finder').scrollIntoView({behavior:'smooth'})">Find My Car</button>
+</nav>
+<section class="hero">
+  <div class="hero-atm"></div>
+  <div class="hero-rays"></div>
+  <div class="hero-floor"></div>
+  <div class="hero-car-glow"></div>
+  <div class="hero-img"></div>
+  <div class="scanlines"></div>
+  <div class="hero-content">
+    <div class="hero-tag"><div class="dot"></div>AI-Powered · Bangladesh 🇧🇩</div>
+    <h1>FIND YOUR<br/><span class="line2">PERFECT</span><br/><span class="line3">MACHINE</span></h1>
+    <p class="hero-sub">From city commuters to Lamborghinis — intelligent vehicle matching for every budget.</p>
+    <div class="cta">
+      <button class="btn-blue" onclick="document.getElementById('finder').scrollIntoView({behavior:'smooth'})">Find My Vehicle →</button>
+      <button class="btn-ghost" onclick="document.getElementById('tools').scrollIntoView({behavior:'smooth'})">Calculate EMI</button>
+    </div>
+  </div>
+  <div class="hero-specs">
+    <div class="spec-card">
+      <div class="spec-item"><div class="spec-num">22<span>+</span></div><div class="spec-lbl">Vehicles</div></div>
+      <div class="spec-item"><div class="spec-num">14<span>+</span></div><div class="spec-lbl">Brands</div></div>
+      <div class="spec-item"><div class="spec-num"><span>AI</span></div><div class="spec-lbl">Powered</div></div>
+      <div class="spec-item"><div class="spec-num"><span>FREE</span></div><div class="spec-lbl">To Use</div></div>
+    </div>
+  </div>
+  <div class="scroll-hint"><div class="scroll-line"></div>Scroll</div>
+</section>
+<section class="section" id="finder">
+  <div class="eyebrow">AI Finder</div>
+  <h2 class="sec-title">TELL US WHAT<br/>YOU <span>NEED</span></h2>
+  <div class="grid2">
+    <div>
+      <div class="chat-box">
+        <div class="chat-top">
+          <div class="chat-top-l"><div class="live"></div>DRIVIO AI Advisor</div>
+          <div class="chat-top-r">Step <span id="stepNum">1</span>/5</div>
+        </div>
+        <div class="chat-msgs" id="chatBox">
+          <div class="msg ai">
+            <div class="av ai">D</div>
+            <div>
+              <div class="bb ai">Welcome to Drivio. I'm your AI vehicle advisor — let's find your perfect machine in Bangladesh.<br/><br/><strong>What type of vehicle are you looking for?</strong></div>
+              <div class="opts" id="chatOptions">
+                <button class="opt" onclick="answer('car','🚗 Car')">🚗 Car</button>
+                <button class="opt" onclick="answer('bike','🏍️ Bike')">🏍️ Bike</button>
+                <button class="opt" onclick="answer('any','Both')">Both</button>
+              </div>
+            </div>
           </div>
         </div>
-        <button class="search-btn" onclick="getRecommendations()">Find My Vehicle →</button>
-      </div>
-    </div>
-
-    <div class="results-wrap">
-      <div id="results-area">
-        <div class="state-msg">
-          <div class="state-icon">🚗</div>
-          Set your preferences above and click <strong>Find My Vehicle</strong>
+        <div class="prog">
+          <div class="prog-lbl">Progress</div>
+          <div class="prog-t"><div class="prog-f" id="progFill" style="width:20%"></div></div>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- EMI TAB -->
-  <div id="tab-emi" class="tab-panel" style="padding: 0 20px 60px;">
-    <div class="tool-card">
-      <h2>EMI Calculator</h2>
-      <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
-        <div class="field">
-          <label>Vehicle Price (BDT)</label>
-          <input type="number" id="emi_price" placeholder="e.g. 2500000"/>
-        </div>
-        <div class="field">
-          <label>Down Payment (BDT)</label>
-          <input type="number" id="emi_down" placeholder="e.g. 500000"/>
-        </div>
-        <div class="field">
-          <label>Interest Rate (%)</label>
-          <input type="number" id="emi_rate" placeholder="e.g. 9.5" value="9.5" step="0.1"/>
-        </div>
-        <div class="field">
-          <label>Loan Duration (years)</label>
-          <select id="emi_years">
-            <option value="1">1 year</option>
-            <option value="2">2 years</option>
-            <option value="3" selected>3 years</option>
-            <option value="4">4 years</option>
-            <option value="5">5 years</option>
-          </select>
-        </div>
-      </div>
-      <button class="calc-btn" onclick="calcEMI()">Calculate EMI</button>
-      <div id="emi-result"></div>
+    <div>
+      <div class="rh">Top Matches</div>
+      <div id="resultsArea"><div class="empty">⚡<br/><br/>Answer the questions<br/>to see your matches</div></div>
     </div>
   </div>
-
-  <!-- FUEL COST TAB -->
-  <div id="tab-fuel" class="tab-panel" style="padding: 0 20px 60px;">
-    <div class="tool-card">
-      <h2>Fuel Cost Estimator</h2>
-      <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
-        <div class="field">
-          <label>Mileage (km/litre)</label>
-          <input type="number" id="fuel_mileage" placeholder="e.g. 15" value="15"/>
-        </div>
-        <div class="field">
-          <label>Daily Travel (km)</label>
-          <input type="number" id="fuel_daily" placeholder="e.g. 30" value="30"/>
-        </div>
-        <div class="field" style="grid-column: 1/-1;">
-          <label>Fuel Price per Litre (BDT)</label>
-          <input type="number" id="fuel_price" placeholder="e.g. 110" value="110"/>
-        </div>
-      </div>
-      <button class="calc-btn" onclick="calcFuel()">Calculate Fuel Cost</button>
-      <div id="fuel-result"></div>
+</section>
+<section class="section" id="tools" style="padding-top:0">
+  <div class="eyebrow">Financial Tools</div>
+  <h2 class="sec-title">CALCULATE<br/>YOUR <span>COSTS</span></h2>
+  <div class="tgrid">
+    <div class="tbox">
+      <div class="tn">EMI <span>Calculator</span></div>
+      <div class="fi"><label>Vehicle Price (BDT)</label><input type="number" id="emi_price" placeholder="e.g. 3200000"/></div>
+      <div class="fi"><label>Down Payment (BDT)</label><input type="number" id="emi_down" placeholder="e.g. 500000"/></div>
+      <div class="fi"><label>Interest Rate (%)</label><input type="number" id="emi_rate" value="9.5" step="0.1"/></div>
+      <div class="fi"><label>Loan Duration</label><select id="emi_years"><option value="1">1 Year</option><option value="2">2 Years</option><option value="3" selected>3 Years</option><option value="4">4 Years</option><option value="5">5 Years</option></select></div>
+      <button class="tbtn" onclick="calcEMI()">Calculate EMI →</button>
+      <div id="emiResult"></div>
+    </div>
+    <div class="tbox">
+      <div class="tn">Fuel <span>Cost</span></div>
+      <div class="fi"><label>Mileage (km/litre)</label><input type="number" id="fuel_mileage" value="15"/></div>
+      <div class="fi"><label>Daily Travel (km)</label><input type="number" id="fuel_daily" value="30"/></div>
+      <div class="fi"><label>Fuel Price per Litre (BDT)</label><input type="number" id="fuel_price" value="110"/></div>
+      <button class="tbtn" onclick="calcFuel()">Calculate Cost →</button>
+      <div id="fuelResult"></div>
     </div>
   </div>
-</main>
-
+</section>
 <footer>
-  Built with Python Flask + HTML · AI Vehicle Finder · Bangladesh 🇧🇩
+  <div class="fl">DRIV<span>IO</span></div>
+  <p>AI Vehicle Finder · Bangladesh · Built with Python Flask</p>
+  <p>© 2026 Ryukz04</p>
 </footer>
-
 <script>
-  // ── Change this to your Render URL when deployed ──────────────────────────
-  const API = 'https://ai-vehicle-app.onrender.com';
-
-  // ── Tab switching ──────────────────────────────────────────────────────────
-  function switchTab(name, btn) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-    btn.classList.add('active');
-  }
-
-  // ── Format BDT ────────────────────────────────────────────────────────────
-  function fmt(n) {
-    return '৳' + Number(n).toLocaleString('en-IN');
-  }
-
-  // ── Recommend ─────────────────────────────────────────────────────────────
-  async function getRecommendations() {
-    const area = document.getElementById('results-area');
-    area.innerHTML = '<div class="state-msg"><div class="state-icon">⏳</div>Finding best vehicles…</div>';
-
-    const params = new URLSearchParams({
-      vehicle_type: document.getElementById('vehicle_type').value,
-      fuel_type:    document.getElementById('fuel_type').value,
-      usage_type:   document.getElementById('usage_type').value,
-      brand:        document.getElementById('brand').value,
-      budget_min:   document.getElementById('budget_min').value || 0,
-      budget_max:   document.getElementById('budget_max').value || 99999999,
-    });
-
-    try {
-      const res  = await fetch(`${API}/recommend?${params}`);
-      const data = await res.json();
-
-      if (!data.length) {
-        area.innerHTML = '<div class="state-msg"><div class="state-icon">😕</div>No vehicles found. Try adjusting your filters.</div>';
-        return;
-      }
-
-      area.innerHTML = `
-        <div class="results-header">
-          <span class="results-title">Top Recommendations</span>
-          <span class="results-count">${data.length} vehicle${data.length > 1 ? 's' : ''} found</span>
-        </div>
-        <div class="cards-grid">${data.map(vehicleCard).join('')}</div>
-      `;
-    } catch (err) {
-      area.innerHTML = `<div class="state-msg"><div class="state-icon">⚠️</div>Could not reach the server. Make sure your Flask app is running on localhost:5000.</div>`;
-    }
-  }
-
-  function vehicleCard(v) {
-    const badgeClass = v.type === 'car' ? 'badge-car' : 'badge-bike';
-    const scorePercent = Math.round((v.score || 0) * 100);
-    return `
-      <div class="vehicle-card">
-        <span class="card-type-badge ${badgeClass}">${v.type}</span>
-        <div class="card-name">${v.name}</div>
-        <div class="card-brand">${v.brand} · ${v.fuel_type}</div>
-        <div class="card-stats">
-          <div class="stat">
-            <div class="stat-label">Mileage</div>
-            <div class="stat-value">${v.mileage_kmpl} km/L</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Engine</div>
-            <div class="stat-value">${v.engine_cc} cc</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Usage</div>
-            <div class="stat-value">${v.usage_type}</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Maintenance/yr</div>
-            <div class="stat-value">${fmt(v.maintenance_yearly_bdt)}</div>
-          </div>
-        </div>
-        <div class="card-price">${fmt(v.price_bdt)}</div>
-        <div class="score-bar">
-          <div class="score-fill" style="width: ${scorePercent}%"></div>
-        </div>
-        <div class="score-label">AI Score: ${scorePercent}%</div>
-      </div>`;
-  }
-
-  // ── EMI Calculator ────────────────────────────────────────────────────────
-  async function calcEMI() {
-    const params = new URLSearchParams({
-      price:         document.getElementById('emi_price').value,
-      down_payment:  document.getElementById('emi_down').value,
-      interest_rate: document.getElementById('emi_rate').value,
-      loan_years:    document.getElementById('emi_years').value,
-    });
-    try {
-      const res  = await fetch(`${API}/emi?${params}`);
-      const d    = await res.json();
-      document.getElementById('emi-result').innerHTML = `
-        <div class="result-box">
-          <div class="result-row"><span class="label">Loan Amount</span><span class="value">${fmt(d.loan_amount)}</span></div>
-          <div class="result-row"><span class="label">Monthly EMI</span><span class="value highlight">${fmt(d.monthly_emi)}</span></div>
-          <div class="result-row"><span class="label">Total Interest</span><span class="value" style="color:var(--red)">${fmt(d.total_interest)}</span></div>
-          <div class="result-row"><span class="label">Total Payable</span><span class="value">${fmt(d.total_payable)}</span></div>
-          <div class="result-row"><span class="label">Duration</span><span class="value">${d.n_months} months</span></div>
-        </div>`;
-    } catch { document.getElementById('emi-result').innerHTML = '<div class="state-msg">Server not reachable.</div>'; }
-  }
-
-  // ── Fuel Cost ─────────────────────────────────────────────────────────────
-  async function calcFuel() {
-    const params = new URLSearchParams({
-      mileage_kmpl:   document.getElementById('fuel_mileage').value,
-      daily_km:       document.getElementById('fuel_daily').value,
-      fuel_price_ltr: document.getElementById('fuel_price').value,
-    });
-    try {
-      const res = await fetch(`${API}/fuel-cost?${params}`);
-      const d   = await res.json();
-      document.getElementById('fuel-result').innerHTML = `
-        <div class="result-box">
-          <div class="result-row"><span class="label">Daily Cost</span><span class="value">${fmt(d.daily_cost)}</span></div>
-          <div class="result-row"><span class="label">Monthly Cost</span><span class="value highlight">${fmt(d.monthly_cost)}</span></div>
-          <div class="result-row"><span class="label">Yearly Cost</span><span class="value">${fmt(d.yearly_cost)}</span></div>
-          <div class="result-row"><span class="label">Litres per Day</span><span class="value">${d.litres_per_day} L</span></div>
-        </div>`;
-    } catch { document.getElementById('fuel-result').innerHTML = '<div class="state-msg">Server not reachable.</div>'; }
-  }
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+document.addEventListener('mousemove',e=>{
+  cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';
+  setTimeout(()=>{ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px';},80);
+});
+document.querySelectorAll('button,a').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='52px';ring.style.height='52px';});
+  el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';});
+});
+const API='https://ai-vehicle-app.onrender.com';
+const state={vehicle_type:'any',fuel_type:'any',usage_type:'any',budget_max:99999999,brand:'any'};
+let step=1;
+const questions=[null,
+  {q:'What type of vehicle?',opts:[['car','🚗 Car'],['bike','🏍️ Bike'],['any','Both']],key:'vehicle_type'},
+  {q:"What's your budget?",opts:[['1500000','Under ৳15L'],['3500000','৳15–35L'],['8000000','৳35–80L'],['99999999','No Limit 💰']],key:'budget_max'},
+  {q:'How will you use it?',opts:[['city','🏙️ City'],['highway','🛣️ Highway'],['mixed','🔀 Mixed']],key:'usage_type'},
+  {q:'Fuel preference?',opts:[['petrol','⛽ Petrol'],['diesel','🔧 Diesel'],['hybrid','🌿 Hybrid'],['any','Any']],key:'fuel_type'},
+  {q:'Preferred brand?',opts:[['any','Any Brand'],['toyota','Toyota'],['honda','Honda'],['bmw','BMW'],['ford','Ford'],['lamborghini','Lamborghini 🐂'],['porsche','Porsche'],['yamaha','Yamaha'],['bajaj','Bajaj']],key:'brand'},
+];
+function answer(v,l){
+  const q=questions[step];if(!q)return;
+  state[q.key]=v;document.getElementById('chatOptions')?.remove();
+  addMsg(l,'user');step++;
+  document.getElementById('stepNum').textContent=Math.min(step,5);
+  document.getElementById('progFill').style.width=(Math.min(step,5)/5*100)+'%';
+  if(step<=5)showTyping(()=>askQ(step));
+  else showTyping(()=>{addAI("Perfect. Searching our database...");setTimeout(fetchResults,600);});
+}
+function addMsg(t,w){
+  const b=document.getElementById('chatBox'),d=document.createElement('div');d.className=`msg ${w}`;
+  d.innerHTML=`<div class="av ${w}">${w==='ai'?'D':'U'}</div><div class="bb ${w}">${t}</div>`;
+  b.appendChild(d);b.scrollTop=b.scrollHeight;
+}
+function addAI(t,opts){
+  const b=document.getElementById('chatBox'),d=document.createElement('div');d.className='msg ai';
+  d.innerHTML=`<div class="av ai">D</div><div><div class="bb ai">${t}</div>${opts?`<div class="opts" id="chatOptions">${opts.map(([v,l])=>`<button class="opt" onclick="answer('${v}','${l}')">${l}</button>`).join('')}</div>`:''}</div>`;
+  b.appendChild(d);b.scrollTop=b.scrollHeight;
+}
+function showTyping(cb){
+  const b=document.getElementById('chatBox'),d=document.createElement('div');d.className='msg ai';d.id='typer';
+  d.innerHTML=`<div class="av ai">D</div><div class="bb ai"><div class="tyrow"><div class="d"></div><div class="d"></div><div class="d"></div></div></div>`;
+  b.appendChild(d);b.scrollTop=b.scrollHeight;
+  setTimeout(()=>{d.remove();cb();},850);
+}
+function askQ(s){const q=questions[s];if(!q)return;addAI(q.q,q.opts);}
+async function fetchResults(){
+  const p=new URLSearchParams({vehicle_type:state.vehicle_type,fuel_type:state.fuel_type,usage_type:state.usage_type,budget_max:state.budget_max,brand:state.brand});
+  try{
+    const data=await(await fetch(`${API}/recommend?${p}`)).json();
+    addAI(`Found <strong>${data.length} vehicle${data.length!==1?'s':''}</strong> matching your profile:`);
+    renderCards(data.slice(0,4));
+  }catch{addAI("Connection error — make sure the server is running.");}
+}
+function renderCards(data){
+  const a=document.getElementById('resultsArea');
+  if(!data.length){a.innerHTML='<div class="empty">😕<br/><br/>No matches found.</div>';return;}
+  a.innerHTML=data.map(v=>`
+    <div class="vc">
+      <img class="vi" src="${v.image_url||'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80'}" alt="${v.name}" onerror="this.src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80'"/>
+      <div class="vb">
+        <div class="vt"><div class="vn">${v.name}</div><div class="vp">৳${Number(v.price_bdt).toLocaleString('en-IN')}</div></div>
+        <div class="vm"><span>${v.brand}</span><span>${v.fuel_type}</span><span>${v.mileage_kmpl}km/L</span><span>${v.engine_cc}cc</span></div>
+        <div class="vsb"><div class="vsf" style="width:${Math.round((v.score||0)*100)}%"></div></div>
+        <div class="vsl">AI Match: ${Math.round((v.score||0)*100)}%</div>
+      </div>
+    </div>`).join('');
+}
+async function calcEMI(){
+  const p=new URLSearchParams({price:document.getElementById('emi_price').value,down_payment:document.getElementById('emi_down').value,interest_rate:document.getElementById('emi_rate').value,loan_years:document.getElementById('emi_years').value});
+  try{
+    const d=await(await fetch(`${API}/emi?${p}`)).json();
+    document.getElementById('emiResult').innerHTML=`<div class="rgrid">
+      <div class="ri hl"><div class="rl">Monthly EMI</div><div class="rv">৳${Number(d.monthly_emi).toLocaleString('en-IN')}</div></div>
+      <div class="ri"><div class="rl">Loan Amount</div><div class="rv">৳${Number(d.loan_amount).toLocaleString('en-IN')}</div></div>
+      <div class="ri"><div class="rl">Total Interest</div><div class="rv">৳${Number(d.total_interest).toLocaleString('en-IN')}</div></div>
+      <div class="ri"><div class="rl">Total Payable</div><div class="rv">৳${Number(d.total_payable).toLocaleString('en-IN')}</div></div>
+    </div>`;
+  }catch{document.getElementById('emiResult').innerHTML='<p style="color:var(--muted);font-size:12px;margin-top:12px">Server not reachable.</p>';}
+}
+async function calcFuel(){
+  const p=new URLSearchParams({mileage_kmpl:document.getElementById('fuel_mileage').value,daily_km:document.getElementById('fuel_daily').value,fuel_price_ltr:document.getElementById('fuel_price').value});
+  try{
+    const d=await(await fetch(`${API}/fuel-cost?${p}`)).json();
+    document.getElementById('fuelResult').innerHTML=`<div class="rgrid">
+      <div class="ri hl"><div class="rl">Monthly Cost</div><div class="rv">৳${Number(d.monthly_cost).toLocaleString('en-IN')}</div></div>
+      <div class="ri"><div class="rl">Daily Cost</div><div class="rv">৳${Number(d.daily_cost).toLocaleString('en-IN')}</div></div>
+      <div class="ri"><div class="rl">Yearly Cost</div><div class="rv">৳${Number(d.yearly_cost).toLocaleString('en-IN')}</div></div>
+      <div class="ri"><div class="rl">Litres/Day</div><div class="rv">${d.litres_per_day}L</div></div>
+    </div>`;
+  }catch{document.getElementById('fuelResult').innerHTML='<p style="color:var(--muted);font-size:12px;margin-top:12px">Server not reachable.</p>';}
+}
 </script>
 </body>
 </html>
